@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UI.ViewModels;
 
 namespace UI
 {
@@ -16,9 +17,53 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainViewModel viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.viewModel = new MainViewModel();
+            this.DataContext = this.viewModel;
+        }
+
+        // Левая панель
+
+        private void BtnNormalization_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.SelectNormalization();
+        }
+
+        private void BtnMasking_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.SelectMasking();
+        }
+
+        private void BtnFiltering_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.SelectFiltering();
+        }
+
+        private void BtnLoadFile_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.LoadFile();
+        }
+
+        private void BtnSaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.SaveFile();
+        }
+
+        // Правая панель
+
+        private void BtnExecute_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.ExecuteOperation();
+        }
+
+        private void BtnShowContract_Click(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.ShowContract();
         }
     }
 }

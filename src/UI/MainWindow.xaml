@@ -152,14 +152,14 @@
                 
                 <!-- Кнопки -->
                 <StackPanel Grid.Row="1" Margin="0,0,0,15">
-                    <Button Style="{StaticResource DefaultButton}" Content="Нормализация текста" Click="SelectNormalization"/>
-                    <Button Style="{StaticResource DefaultButton}" Content="Маскирование" Click="SelectMasking"/>
-                    <Button Style="{StaticResource DefaultButton}" Content="Фильтрация строк" Click="SelectFiltering"/>
+                    <Button Style="{StaticResource DefaultButton}" Content="Нормализация текста" Click="BtnNormalization_Click"/>
+                    <Button Style="{StaticResource DefaultButton}" Content="Маскирование" Click="BtnMasking_Click"/>
+                    <Button Style="{StaticResource DefaultButton}" Content="Фильтрация строк" Click="BtnFiltering_Click"/>
                 </StackPanel>
                 
                 <StackPanel Grid.Row="2">
-                    <Button Style="{StaticResource UploadButton}" Content="⤴ Загрузить файл"/>
-                    <Button Style="{StaticResource DefaultButton}" Content="⤵ Скачать файл"/>
+                    <Button Style="{StaticResource UploadButton}" Content="⤴ Загрузить файл" Click="BtnLoadFile_Click"/>
+                    <Button Style="{StaticResource DefaultButton}" Content="⤵ Скачать файл" Click="BtnSaveFile_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -203,7 +203,7 @@
                              Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
                              BorderThickness="0"
                              Background="Transparent"
-                             VerticalAlignment="Stretch" BorderBrush="{x:Null}" Foreground="#FFCCCCCC"/>
+                             VerticalAlignment="Stretch" BorderBrush="{x:Null}" Foreground="Black"/>
                 </Border>
 
                 <!-- Кнопка выполнить -->
