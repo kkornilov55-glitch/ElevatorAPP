@@ -1,0 +1,271 @@
+﻿<Window x:Class="UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Лабораторная работа №1: текстовый конвейер" 
+        Height="600" Width="900" 
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+    <Window.Resources>
+
+        <!-- Стиль для кнопок операций -->
+        <Style x:Key="OperationButton" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderBrush" Value="#FFC7C7CC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для красной кнопки -->
+        <Style x:Key="ExecuteButton" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#C62828"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопки "Показать контракт" -->
+        <Style x:Key="ContractButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#E53935"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#E53935"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFEBEE"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для чёрной кнопки -->
+        <Style x:Key="UploadButton" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#333333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Border Grid.Column="0" 
+                Background="White" 
+                CornerRadius="10" 
+                Padding="15"
+                Margin="0,0,10,0" BorderBrush="#FFC7C7CC" BorderThickness="1,1,1,1">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" 
+                           Text="Список операций" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,15" HorizontalAlignment="Center"/>
+
+                <StackPanel Grid.Row="1" Margin="0,0,0,15">
+                    <Border Style="{StaticResource OperationButton}">
+                        <Button Content="Нормализация текста" 
+                            Background="{x:Null}"
+                            Padding="0"
+                            BorderThickness="0"
+                            FontSize="14" BorderBrush="{x:Null}"/>
+                    </Border>
+
+                    <Border Style="{StaticResource OperationButton}">
+                        <Button Content="Маскирование" 
+                      Background="{x:Null}"
+                      Padding="0"
+                      BorderThickness="0"
+                      FontSize="14" BorderBrush="{x:Null}"/>
+                    </Border>
+
+                    <Border Style="{StaticResource OperationButton}">
+                        <Button Content="Фильтрация строк" 
+                      Background="{x:Null}"
+                      Padding="0"
+                      BorderThickness="0"
+                      FontSize="14" BorderBrush="{x:Null}"/>
+                    </Border>
+                </StackPanel>
+                
+                <StackPanel Grid.Row="2">
+                    <Border Style="{StaticResource UploadButton}">
+                        <Button Content="⤴ Загрузить файл" 
+                      Background="{x:Null}"
+                      Padding="0"
+                      BorderThickness="0"
+                      FontSize="14" BorderBrush="{x:Null}" Foreground="White"/>
+                    </Border>
+
+                    <Border Style="{StaticResource OperationButton}">
+                        <Button Content="⤵ Скачать файл" 
+                      Background="{x:Null}"
+                      Padding="0"
+                      BorderThickness="0"
+                      FontSize="14" BorderBrush="{x:Null}"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="1" 
+                Background="White" 
+                CornerRadius="10" 
+                Padding="14"
+                BorderThickness="1,1,1,1"
+                BorderBrush="#FFC7C7CC">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" 
+                           Text="Нормализация текста" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+
+                <Border Grid.Row="1" 
+                        CornerRadius="8"
+                        BorderBrush="#CCCCCC"
+                        BorderThickness="1"
+                        Background="White"
+                        ClipToBounds="True"
+                        Margin="0,0,0,8">
+                    <TextBox TextWrapping="Wrap" 
+                             AcceptsReturn="True"
+                             Padding="10"
+                             FontSize="14"
+                             Text="Тут будет текст из файла..."
+                             BorderThickness="0"
+                             Background="Transparent"
+                             VerticalAlignment="Stretch" BorderBrush="{x:Null}" Foreground="#FFCCCCCC"/>
+                </Border>
+
+                <Border Grid.Row="2" 
+                        Style="{StaticResource ExecuteButton}">
+                    <Button Content="Выполнить" 
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="White"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Cursor="Hand"/>
+                </Border>
+
+                <Border Grid.Row="3" 
+                        BorderBrush="#CCCCCC" 
+                        BorderThickness="1" 
+                        CornerRadius="8"
+                        Padding="15"
+                        Margin="0,0,0,8">
+
+                    <StackPanel>
+                        <TextBlock Text="Статус контракта" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,15"/>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border Width="35" Height="35" 
+                                    Background="Red" 
+                                    CornerRadius="17"
+                                    Margin="0,0,10,0">
+                                <TextBlock Text="❌" 
+                           FontSize="20" 
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="PRE" FontSize="12" Foreground="Gray"/>
+                                <TextBlock Text="НЕ ВЫПОЛНЕНО" 
+                           FontSize="14" 
+                           FontWeight="Bold"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Индикатор Post -->
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="35" Height="35" 
+                                    Background="Red" 
+                                    CornerRadius="17"
+                                    Margin="0,0,10,0">
+                                <TextBlock Text="❌" 
+                           FontSize="20" 
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="POST" FontSize="12" Foreground="Gray"/>
+                                <TextBlock Text="НЕ ВЫПОЛНЕНО" 
+                           FontSize="14" 
+                           FontWeight="Bold"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Button Grid.Row="4" 
+                        Style="{StaticResource ContractButton}"
+                        Content="Показать контракт"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
