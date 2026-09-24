@@ -43,7 +43,7 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="0,10,0,10"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -133,7 +133,7 @@
         <!-- Левая часть -->
         <Border Grid.Column="0" 
                 Background="White" 
-                CornerRadius="10" 
+                CornerRadius="12" 
                 Padding="15"
                 Margin="0,0,10,0" BorderBrush="#FFC7C7CC" BorderThickness="1,1,1,1">
 
@@ -167,7 +167,7 @@
         <!-- Правая часть -->
         <Border Grid.Column="1" 
                 Background="White" 
-                CornerRadius="10" 
+                CornerRadius="12" 
                 Padding="14"
                 BorderThickness="1,1,1,1"
                 BorderBrush="#FFC7C7CC">
@@ -190,7 +190,7 @@
 
                 <!-- Окно для текста -->
                 <Border Grid.Row="1" 
-                        CornerRadius="8"
+                        CornerRadius="12"
                         BorderBrush="#CCCCCC"
                         BorderThickness="1"
                         Background="White"
@@ -216,7 +216,7 @@
                 <Border Grid.Row="3" 
                         BorderBrush="#CCCCCC" 
                         BorderThickness="1" 
-                        CornerRadius="8"
+                        CornerRadius="12"
                         Padding="15"
                         Margin="0,0,0,8">
 

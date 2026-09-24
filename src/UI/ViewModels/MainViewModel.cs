@@ -172,11 +172,9 @@ namespace UI.ViewModels
         // Кнопка Показать контракт
         public void ShowContract()
         {
-            string contractText = "Контракт операции: " + this.CurrentOperationTitle + "\n\n" +
-                                  "Pre-условие: Входная строка не null и не состоит из одних пробелов.\n" +
-                                  "Post-условие: Строка успешно обработана согласно правилам операции.";
-
-            MessageBox.Show(contractText, "Контракт операции", MessageBoxButton.OK, MessageBoxImage.Information);
+            ContractViewModel contractViewModel = new ContractViewModel(this.currentOperationTitle);
+            ContractWindow contractWindow = new ContractWindow(contractViewModel);
+            contractWindow.ShowDialog();
         }
 
         // Кнопка Загрузить файл
