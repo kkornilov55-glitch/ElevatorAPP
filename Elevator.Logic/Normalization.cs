@@ -1,4 +1,6 @@
-﻿namespace Elevator.Logic
+﻿using System.Text.RegularExpressions;
+
+namespace Elevator.Logic
 {
     public class Normalization
     {
@@ -18,9 +20,9 @@
 
             string result = text;
 
-            ///Методы для обработки теста:        
-            /// 1. Приведение к нижнему регистру
-            /// 2. Удаление пунктуации и спецсимволов
+            result = Lowercase(result);
+
+            result = RemovePunct(result);
             /// 3. Замена переносов строк и табуляций на пробелы
             /// 4. Удаление пробелов в начале и конце
             /// ...
@@ -29,5 +31,22 @@
 
             return result;
         }
+
+        // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
+
+        /// <summary>
+        /// Приведение к нижнему регистру
+        /// </summary>
+        /// <param name="text">введённый текст</param>
+        /// <returns>обработанный текст</returns>
+        private string Lowercase(string text)
+            { return text.ToLower(); }
+        /// <summary>
+        /// Удаление пунктуации и спецсимволов
+        /// </summary>
+        /// <param name="text">введённый текст</param>
+        /// <returns>обработанный текст</returns>
+        private string RemovePunct(string text)
+        { return Regex.Replace(text, @"[^\w\s]", ""); }
     }
 }
