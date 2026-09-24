@@ -29,7 +29,23 @@ namespace Elevator.Logic
             result = CollapseWhitespace(result);
 
             result = TrimWhitespace(result);
+
             // Post-условия
+
+            if (result != result.ToLower())
+            {
+                throw new InvalidOperationException("Post-условие нарушено: результат содержит символы верхнего регистра");
+            }
+
+            if (result.Contains("  "))
+            {
+                throw new InvalidOperationException("Post-условие нарушено: результат содержит двойные пробелы");
+            }
+
+            if (Regex.IsMatch(result, @"[^\w\s]"))
+            {
+                throw new InvalidOperationException("Post-условие нарушено: результат содержит знаки препинания");
+            }
 
 
             return result;
