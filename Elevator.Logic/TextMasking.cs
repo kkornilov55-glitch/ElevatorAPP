@@ -171,5 +171,69 @@ namespace Elevator.Logic
             return pr;
         }
 
+        public ProcessResult BankCardMask(string input)
+        {
+            var pr = new ProcessResult();
+            string rawInput = input ?? string.Empty;
+
+            // --- Проверка Pre-условий ---
+            const string notEmpty = "Строка содержит данные";
+            const string cardDigits = "Корректное количество цифр";
+
+            if (string.IsNullOrWhiteSpace(rawInput))
+            {
+                pr.AddPre(notEmpty, false);
+                pr.isSuccess = false;
+                return pr;
+            }
+            pr.AddPre(notEmpty, true);
+
+            string digitsOnly = Regex.Replace(rawInput, @"[^\d]", string.Empty);
+
+            if (digitsOnly.Length != 16)
+            {
+                pr.AddPre(cardDigits, false);
+                pr.isSuccess = false;
+                return pr;
+            }
+            pr.AddPre(cardDigits, true);
+
+            // --- Шаблон ---
+            string mask = "#### #### #### ####";
+            StringBuilder sb = new StringBuilder();
+            int currNum = 0;
+
+            foreach (char c in mask)
+            {
+                if (c == '#')
+                {
+                    sb.Append(digitsOnly[currNum]);
+                    currNum++;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            string result = sb.ToString();
+
+            // --- Проверка Post-условий ---
+            const string correctLen = "Длина результирующей строки";
+            const string spacesCheck = "Разделители расставлены корректно";
+
+            bool lenOk = result.Length == 19;
+            pr.AddPost(correctLen, lenOk);
+            if (!lenOk) pr.isSuccess = false;
+
+            bool spacesOk = result[4] == ' ' && result[9] == ' ' && result[14] == ' ';
+            pr.AddPost(spacesCheck, spacesOk);
+            if (!spacesOk) pr.isSuccess = false;
+
+            if (pr.isSuccess)
+                pr.OutputText = result;
+
+            return pr;
+        }
+
     }
 }
