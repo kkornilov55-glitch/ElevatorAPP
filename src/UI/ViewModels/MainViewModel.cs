@@ -1,4 +1,4 @@
-﻿using Elevator.Logic;
+﻿using TextProcessor.Logic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
