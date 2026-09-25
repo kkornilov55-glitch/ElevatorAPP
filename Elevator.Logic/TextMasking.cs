@@ -4,40 +4,34 @@ namespace Elevator.Logic
 {
     public class TextMasking
     {
-        public ProcessResult RuNumberMask(string number)
+        public ProcessResult RuNumberMask(string input)
         {
             var pr = new ProcessResult();
-
-            var normalizedNumber = NormalizeNumber(number?? string.Empty);
-
+            string rawInput = input ?? string.Empty;
 
             // --- Проверка Pre-условий ---
             const string isNotEmptyCheck = "Строка содержит данные";
             const string digitCountCheck = "Корректное количество цифр";
 
-            if (string.IsNullOrWhiteSpace(normalizedNumber))
+            if (string.IsNullOrWhiteSpace(rawInput))
             {
                 pr.AddPre(isNotEmptyCheck, false);
                 pr.isSuccess = false;
+                return pr; //Прерываем выполнение, дальше идти нет смысла
             }
-            else
-            {
-                pr.AddPre(isNotEmptyCheck, true);
-            }
+            pr.AddPre(isNotEmptyCheck, true);
+            string normalizedNumber = NormalizeNumber(rawInput);
 
             if (normalizedNumber.Length != 10)
             {
                 pr.AddPre(digitCountCheck, false);
                 pr.isSuccess = false;
+                return pr;
             }
-            else
-            {
-                pr.AddPre(digitCountCheck, true);
-            }
+            pr.AddPre(digitCountCheck, true);
 
 
-            // --- Приводим номер к шаблонной записи --
-
+            // --- Шаблон ---
             string mask = "+7 (###) ###-##-##";
 
             StringBuilder sb = new StringBuilder();
@@ -103,10 +97,79 @@ namespace Elevator.Logic
         }
         private string NormalizeNumber(string number)
         {
-            //Оставляем только цифры и убираем код страны
-            return Regex.Replace(number, @"[^\d]", string.Empty).Substring(1);
+            string digitsOnly = Regex.Replace(number, @"[^\d]", string.Empty);
+
+            //Если начинается с 8 или 7 и длина 11, убираем первый символ
+            if ((digitsOnly.StartsWith("7") || digitsOnly.StartsWith("8")) && digitsOnly.Length == 11)
+            {
+                digitsOnly = digitsOnly.Substring(1);
+            }
+            return digitsOnly;
         }
 
+        public ProcessResult SnilsMask(string input)
+        {
+            var pr = new ProcessResult();
+            string rawInput = input ?? string.Empty;
+
+            // --- Проверка Pre-условий ---
+            const string notEmpty = "Строка содержит данные";
+            const string exactDigits = "Корректное количество цифр";
+
+            if (string.IsNullOrWhiteSpace(rawInput))
+            {
+                pr.AddPre(notEmpty, false);
+                pr.isSuccess = false;
+                return pr;
+            }
+            pr.AddPre(notEmpty, true);
+
+            string digitsOnly = Regex.Replace(rawInput, @"[^\d]", string.Empty);
+
+            if (digitsOnly.Length != 11)
+            {
+                pr.AddPre(exactDigits, false);
+                pr.isSuccess = false;
+                return pr;
+            }
+            pr.AddPre(exactDigits, true);
+
+            // --- Шаблон ---
+            string mask = "###-###-### ##";
+            StringBuilder sb = new StringBuilder();
+            int currNum = 0;
+
+            foreach (char c in mask)
+            {
+                if (c == '#')
+                {
+                    sb.Append(digitsOnly[currNum]);
+                    currNum++;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            string result = sb.ToString();
+
+            // --- Проверка Post-условий ---
+            const string correctLen = "Корректная длина СНИЛС";
+            const string noTemplates = "Отсутствуют символы шаблона";
+
+            bool lenOk = result.Length == 14;
+            pr.AddPost(correctLen, lenOk);
+            if (!lenOk) pr.isSuccess = false;
+
+            bool tempOk = !result.Contains('#');
+            pr.AddPost(noTemplates, tempOk);
+            if (!tempOk) pr.isSuccess = false;
+
+            if (pr.isSuccess)
+                pr.OutputText = result;
+
+            return pr;
+        }
 
     }
 }
