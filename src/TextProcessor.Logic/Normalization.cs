@@ -23,6 +23,10 @@ namespace TextProcessor.Logic
             result = TrimWhitespace(result);
 
             // Post-условия
+            if (string.IsNullOrEmpty(result))
+            {
+                throw new InvalidOperationException("Post-условие нарушено: результат не может быть пустой строкой");
+            }
             if (result != result.ToLower())
             {
                 throw new InvalidOperationException("Post-условие нарушено: результат содержит символы верхнего регистра");
