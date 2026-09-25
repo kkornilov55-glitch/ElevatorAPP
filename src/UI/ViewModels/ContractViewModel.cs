@@ -42,11 +42,18 @@ namespace UI.ViewModels
             set { this.effects = value; this.Notify("Effects"); }
         }
 
-        private string examples = "";
-        public string Examples
+        private string validExample = "";
+        public string ValidExample
         {
-            get { return this.examples; }
-            set { this.examples = value; this.Notify("Examples"); }
+            get { return this.validExample; }
+            set { this.validExample = value; this.Notify("ValidExample"); }
+        }
+
+        private string invalidExample = "";
+        public string InvalidExample
+        {
+            get { return this.invalidExample; }
+            set { this.invalidExample = value; this.Notify("InvalidExample"); }
         }
 
         public ContractViewModel(string operationTitle)
@@ -60,49 +67,60 @@ namespace UI.ViewModels
 
             if (operationTitle == "Нормализация текста")
             {
-                this.PreCondition = "1. Входная строка не является null\n" + 
+                this.PreCondition = "1. Строка содержит данные (не пустая и не null)\n" + 
                                     "2. Тип переданного значения — строка (string)";
                 this.PostCondition = "1. Возвращаемое значение не равно null\n" + 
                                      "2. Возвращаемая строка полностью приведена к нижнему регистру\n" +
                                      "3. Возвращаемая строка не содержит двойных пробелов подряд\n" +
-                                     "4. Возвращаемая строка не содержит знаков препинания и спецсимволов\n" +
-                                     "5. Если на вход была подана пустая строка, на выходе также будет пустая строка";
+                                     "4. Возвращаемая строка не содержит знаков препинания и спецсимволов";
                 this.Effects = "Исходная строка не изменяется. Возвращается новая строка. Если входная строка null — выбрасывается ArgumentException.";
-                this.Examples = "1. \"  ПРИВЕТ  Мир  \" -> \"привет мир\" (Pre OK, Post OK)\n" +
-                                "2. \"Привет, мир!\" -> \"привет мир\" (Pre OK, Post OK)\n" +
-                                "3. \"\" -> \"\" (Pre OK, Post OK — пустая остаётся пустой)\n" +
-                                "4. null -> ArgumentException (Pre FAIL)\n" +
-                                "5. \"АБВГД!!!\" -> \"абвгд\" (Pre OK, Post OK)\n" +
-                                "6. \"Тест... 123\" -> \"тест 123\" (Pre OK, Post OK)";
+                this.ValidExample = "Вход: \"  ПРИВЕТ, мир!!!  \"\n" +
+                                    "Выход: \"привет мир\"\n" +
+                                    "Результат: Pre OK, Post OK";
+                this.InvalidExample = "Вход: null\n" +
+                                      "Результат: Pre FAIL → выбрасывается ArgumentNullException";
             }
             else if (operationTitle == "Маскирование")
             {
-                this.PreCondition = "Входная строка не является null.";
-                this.PostCondition = "Все гласные буквы русского алфавита (а, о, е, и, у, ы, э, я, ю, А, О, Е, И, У, , Э, Я, Ю) в результирующей строке заменены на символ '*'.";
-                this.Effects = "Исходная строка не изменяется. Возвращается новая строка. Если входная строка null — выбрасывается ArgumentException.";
-                this.Examples = "1. \"привет\" -> \"пр*в*т\" (Pre OK, Post OK)\n" +
-                                "2. \"\" -> \"\" (Pre OK, Post OK)\n" +
-                                "3. null -> ArgumentException (Pre FAIL)\n" +
-                                "4. \"АЕИОУ\" -> \"*****\" (Pre OK, Post OK)\n" +
-                                "5. \"нет гласных\" -> \"нет гласных\" (Pre OK, Post OK)";
+                this.PreCondition = "1. Строка содержит данные (не пустая и не null)\n" +
+                                    "2. После удаления всех нецифровых символов остаётся ровно 10 цифр (допускается формат 8XXXXXXXXXX или 7XXXXXXXXXX — первая цифра отбрасывается)";
+                this.PostCondition = "1. Длина результирующей строки равна 18 символам\n" +
+                                     "2. Строка начинается с \"+7 \" (корректный код страны)\n" +
+                                     "3. В результирующей строке отсутствуют символы шаблона '#'"; ;
+                this.Effects = "Исходная строка не изменяется. Возвращается новая строка в формате +7 (XXX) XXX-XX-XX.\n\n" +
+                               "Исключения:\n" +
+                               "- Не выбрасываются. При нарушении Pre/Post-условий метод возвращает ProcessResult с isSuccess = false и списком проваленных условий.";
+                this.ValidExample = "Вход: \"89001234567\"\n" +
+                                    "Выход: \"+7 (900) 123-45-67\"\n" +
+                                    "Результат: Pre OK, Post OK";
+                this.InvalidExample = "Вход: \"123\"\n" +
+                                      "Результат: Pre FAIL → \"Корректное количество цифр\" не выполнено, isSuccess = false, OutputText не заполнен";
             }
             else if (operationTitle == "Фильтрация строк")
             {
-                this.PreCondition = "Входная строка не является null.";
-                this.PostCondition = "Результирующая строка не содержит цифровых символов (0-9). Все остальные символы сохранены.";
-                this.Effects = "Исходная строка не изменяется. Возвращается новая строка. Если входная строка null — выбрасывается ArgumentException.";
-                this.Examples = "1. \"Тест 123 пример\" -> \"Тест  пример\" (Pre OK, Post OK)\n" +
-                                "2. \"нет цифр\" -> \"нет цифр\" (Pre OK, Post OK)\n" +
-                                "3. null -> ArgumentException (Pre FAIL)\n" +
-                                "4. \"12345\" -> \"\" (Pre OK, Post OK)\n" +
-                                "5. \"\" -> \"\" (Pre OK, Post OK)";
+                this.PreCondition = "1. Исходный текст не пуст (содержит хотя бы одну строку)\n" +
+                                    "2. Ключевое слово задано (не пустая строка и не null)"; ;
+                this.PostCondition = "1. Найдены совпадения ключевого слова в тексте (хотя бы одна строка содержит искомое слово)\n" +
+                                     "2. Результирующий текст не пуст";
+                this.Effects = "Исходный текст не изменяется. Возвращается новый текст, состоящий только из строк, содержащих ключевое слово (поиск без учёта регистра).\n\n" +
+                               "Исключения:\n" +
+                               "- Не выбрасываются. При нарушении Pre/Post-условий метод возвращает ProcessResult с isSuccess = false и списком проваленных условий.";
+                this.ValidExample = "Вход: \"Привет мир\nЭто тестовая строка\nЕщё текст\"\n" +
+                                    "Ключевое слово: \"тест\"\n" +
+                                    "Выход: \"Это тестовая строка\"\n" +
+                                    "Результат: Pre OK, Post OK";
+
+                this.InvalidExample = "Вход: \"Привет мир\\nЕщё текст\"\n" +
+                                      "Ключевое слово: \"тест\"\n" +
+                                      "Результат: Post FAIL → \"Найдены совпадения в тексте\" не выполнено, isSuccess = false, OutputText не заполнен";
             }
             else
             {
                 this.PreCondition = "Неизвестная операция.";
                 this.PostCondition = "Неизвестная операция.";
                 this.Effects = "Нет данных.";
-                this.Examples = "Нет данных.";
+                this.ValidExample = "Нет данных.";
+                this.InvalidExample = "Нет данных.";
             }
         }
     }

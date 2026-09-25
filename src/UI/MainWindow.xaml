@@ -260,9 +260,9 @@
                                 <TextBlock Text="✓" FontSize="20" Foreground="White" 
                                    HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
-                            <StackPanel VerticalAlignment="Center">
+                            <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="PRE" FontSize="12" Foreground="Gray"/>
-                                <TextBlock Text="{Binding PreText}" FontSize="14" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding PreText}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -275,9 +275,9 @@
                                 <TextBlock Text="✓" FontSize="20" Foreground="White" 
                                    HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
-                            <StackPanel VerticalAlignment="Center">
+                            <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="POST" FontSize="12" Foreground="Gray"/>
-                                <TextBlock Text="{Binding PostText}" FontSize="14" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding PostText}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
