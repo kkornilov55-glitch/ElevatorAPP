@@ -179,6 +179,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" 
@@ -205,15 +206,38 @@
                              Background="Transparent"
                              VerticalAlignment="Stretch" BorderBrush="{x:Null}" Foreground="Black"/>
                 </Border>
+                
+                <!-- Поле ключевого слова фильтрации -->
+                <Border Grid.Row="2" Margin="0,0,0,8" Visibility="{Binding IsFilteringVisible}">
+                    <StackPanel>
+                        <TextBlock Text="Ключевое слово для фильтрации:" 
+                                   FontSize="12" 
+                                   FontWeight="Bold" 
+                                   Foreground="#666666" 
+                                   Margin="0,0,0,4"/>
+                        <Border CornerRadius="8" 
+                                BorderBrush="#CCCCCC" 
+                                BorderThickness="1" 
+                                Background="#F9F9F9">
+                            <TextBox Text="{Binding FilterKeyword, UpdateSourceTrigger=PropertyChanged}"
+                                     Padding="8,6"
+                                     FontSize="13"
+                                     BorderThickness="0"
+                                     Background="Transparent"
+                                     ToolTip="Введите слово для поиска (используется при операции 'Фильтрация строк')"/>    
+                        </Border>
+                    </StackPanel>
+                </Border>
+
 
                 <!-- Кнопка выполнить -->
-                <Button Grid.Row="2" 
+                <Button Grid.Row="3" 
                         Style="{StaticResource ExecuteButton}"
                         Content="Выполнить"
                         Click="BtnExecute_Click"/>
 
                 <!-- Статус контракта -->
-                <Border Grid.Row="3" 
+                <Border Grid.Row="4" 
                         BorderBrush="#CCCCCC" 
                         BorderThickness="1" 
                         CornerRadius="12"
@@ -236,9 +260,9 @@
                                 <TextBlock Text="✓" FontSize="20" Foreground="White" 
                                    HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
-                            <StackPanel VerticalAlignment="Center">
+                            <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="PRE" FontSize="12" Foreground="Gray"/>
-                                <TextBlock Text="{Binding PreText}" FontSize="14" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding PreText}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -251,16 +275,16 @@
                                 <TextBlock Text="✓" FontSize="20" Foreground="White" 
                                    HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
-                            <StackPanel VerticalAlignment="Center">
+                            <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="POST" FontSize="12" Foreground="Gray"/>
-                                <TextBlock Text="{Binding PostText}" FontSize="14" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding PostText}" FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Кнопка показать контракт -->
-                <Button Grid.Row="4" 
+                <Button Grid.Row="5" 
                         Style="{StaticResource ContractButton}"
                         Content="Показать контракт"
                         Click="BtnShowContract_Click"/>

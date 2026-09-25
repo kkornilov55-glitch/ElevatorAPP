@@ -67,19 +67,46 @@
                                    Foreground="#333333"
                                    Margin="0,0,0,15"/>
 
-                        <!-- Граничные примеры -->
-                        <TextBlock Text="Граничные примеры:" 
-                                   FontSize="14" 
-                                   FontWeight="Bold" 
-                                   Foreground="#333333"
-                                   Margin="0,0,0,5"/>
-                        <TextBlock Text="{Binding Examples}" 
-                                   FontSize="13" 
-                                   TextWrapping="Wrap"
-                                   Foreground="#333333"
-                                   FontFamily="Consolas"
-                                   Margin="0,0,0,0"/>
+                        <!-- Валидный пример -->
+                        <Border Background="#E8F5E9" 
+                                CornerRadius="6" 
+                                Padding="10" 
+                                Margin="0,0,0,10"
+                                BorderBrush="#4CAF50" 
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Валидный вход:" 
+                                           FontSize="12" 
+                                           FontWeight="Bold" 
+                                           Foreground="#2E7D32"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding ValidExample}" 
+                                           FontSize="12" 
+                                           TextWrapping="Wrap"
+                                           Foreground="#333333"
+                                           FontFamily="Consolas"/>
+                            </StackPanel>
+                        </Border>
 
+                        <!-- Невалидный пример -->
+                        <Border Background="#FFEBEE" 
+                                CornerRadius="6" 
+                                Padding="10"
+                                BorderBrush="#E53935" 
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Невалидный вход:" 
+                                           FontSize="12" 
+                                           FontWeight="Bold" 
+                                           Foreground="#C62828"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding InvalidExample}" 
+                                           FontSize="12" 
+                                           TextWrapping="Wrap"
+                                           Foreground="#333333"
+                                           FontFamily="Consolas"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
 
