@@ -2,8 +2,17 @@
 using System.Text.RegularExpressions;
 namespace Elevator.Logic
 {
+    /// <summary>
+    /// Класс для обработки текста и приведения его к нужным форматам (маскам).
+    /// </summary>
     public class TextMasking
     {
+        /// <summary>
+        /// Превращает сырую строку в российский номер формата +7 (XXX) XXX-XX-XX.
+        /// Автоматически собирает статистику успехов и ошибок для UI.
+        /// </summary>
+        /// <param name="input">Входная строка от пользователя (может содержать мусор, скобки или быть пустой).</param>
+        /// <returns>Объект ProcessResult, содержащий итоговый текст и списки пройденных/проваленных условий.</returns>
         public ProcessResult RuNumberMask(string input)
         {
             var pr = new ProcessResult();
@@ -107,6 +116,12 @@ namespace Elevator.Logic
             return digitsOnly;
         }
 
+        /// <summary>
+        /// Превращает сырую строку в отформатированный номер СНИЛС формата XXX-XXX-XXX XX.
+        /// Автоматически собирает статистику успехов и ошибок для UI.
+        /// </summary>
+        /// <param name="input">Входная строка от пользователя (может содержать тире, пробелы или быть пустой).</param>
+        /// <returns>Объект ProcessResult, содержащий итоговый текст и списки пройденных/проваленных условий.</returns>
         public ProcessResult SnilsMask(string input)
         {
             var pr = new ProcessResult();
@@ -171,6 +186,12 @@ namespace Elevator.Logic
             return pr;
         }
 
+        /// <summary>
+        /// Превращает сырую строку в отформатированный номер банковской карты формата XXXX XXXX XXXX XXXX.
+        /// Автоматически собирает статистику успехов и ошибок для UI.
+        /// </summary>
+        /// <param name="input">Входная строка от пользователя (16 цифр, может содержать лишние символы или пробелы).</param>
+        /// <returns>Объект ProcessResult, содержащий итоговый текст и списки пройденных/проваленных условий.</returns>
         public ProcessResult BankCardMask(string input)
         {
             var pr = new ProcessResult();
