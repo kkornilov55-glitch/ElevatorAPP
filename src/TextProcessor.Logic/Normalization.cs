@@ -14,11 +14,6 @@ namespace TextProcessor.Logic
                 throw new ArgumentNullException(nameof(text), "Pre-условие нарушено: текст не может быть null");
             }
 
-            if (string.IsNullOrEmpty(text))
-            {
-                return "";
-            }
-
             string result = text;
 
             result = Lowercase(result);
