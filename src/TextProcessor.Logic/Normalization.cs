@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Elevator.Logic
+namespace TextProcessor.Logic
 {
     public class Normalization
     {

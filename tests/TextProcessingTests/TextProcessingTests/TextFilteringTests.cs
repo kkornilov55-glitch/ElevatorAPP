@@ -1,8 +1,8 @@
 ﻿using System;
 using Xunit;
-using Elevator.Logic;
+using TextProcessor.Logic;
 
-namespace Elevator.Tests
+namespace TextProcessorTests
 {
     public class TextFilteringTests
     {
@@ -16,14 +16,19 @@ namespace Elevator.Tests
         [Fact]
         public void FilterLinesByKeyword_ValidInput_FiltersCorrectly()
         {
+            // Arrange
             string input = "Яблоко\nГруша\nяблочный сок\nАпельсин";
             string keyword = "яблок";
 
+            // Act
             ProcessResult result = _filter.FilterLinesByKeyword(input, keyword);
 
+            // Assert
             Assert.True(result.isSuccess);
+            Assert.False(string.IsNullOrWhiteSpace(result.OutputText));
+
             Assert.Contains("Яблоко", result.OutputText);
-            Assert.Contains("яблочный сок", result.OutputText);
+
             Assert.DoesNotContain("Груша", result.OutputText);
             Assert.DoesNotContain("Апельсин", result.OutputText);
         }

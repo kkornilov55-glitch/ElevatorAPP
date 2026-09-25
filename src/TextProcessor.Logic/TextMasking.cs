@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-namespace Elevator.Logic
+namespace TextProcessor.Logic
 {
     /// <summary>
     /// Класс для обработки текста и приведения его к нужным форматам (маскам).

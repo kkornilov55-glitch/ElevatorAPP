@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using Elevator.Logic;
+using TextProcessor.Logic;
 
 namespace TextProcessingTests
 {
