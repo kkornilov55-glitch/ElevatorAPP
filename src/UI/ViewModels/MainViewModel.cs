@@ -53,7 +53,15 @@ namespace UI.ViewModels
             {
                 this.inputText = value;
                 this.Notify("InputText");
-                this.CheckPreCondition(); // Проверяем Pre при каждом изменении текста
+
+                // Если текст изменили вручную после успешного выполнения, сбрасываем статусы
+                if (this.PreColor == "Green" || this.PostColor == "Green")
+                {
+                    this.PreColor = "Gray";
+                    this.PreText = "ОЖИДАНИЕ ПРОВЕРКИ";
+                    this.PostColor = "Gray";
+                    this.PostText = "ОЖИДАНИЕ ПРОВЕРКИ";
+                }
             }
         }
 
@@ -106,7 +114,7 @@ namespace UI.ViewModels
         }
 
         // Индикаторы Pre
-        private string preColor = "Red";
+        private string preColor = "Gray";
         public string PreColor
         {
             get { return this.preColor; }
@@ -117,7 +125,7 @@ namespace UI.ViewModels
             }
         }
 
-        private string preText = "НЕ ВЫПОЛНЕНО";
+        private string preText = "ОЖИДАНИЕ ПРОВЕРКИ";
         public string PreText
         {
             get { return this.preText; }
@@ -140,7 +148,7 @@ namespace UI.ViewModels
         }
 
         // Индикаторы Post
-        private string postColor = "Red";
+        private string postColor = "Gray";
         public string PostColor
         {
             get { return this.postColor; }
@@ -151,7 +159,7 @@ namespace UI.ViewModels
             }
         }
 
-        private string postText = "НЕ ВЫПОЛНЕНО";
+        private string postText = "ОЖИДАНИЕ ПРОВЕРКИ";
         public string PostText
         {
             get { return this.postText; }
@@ -181,25 +189,10 @@ namespace UI.ViewModels
         // Логика статусов
         private void ResetStatuses()
         {
-            this.PreColor = "Red";
-            this.PreText = "НЕ ВЫПОЛНЕНО";
-            this.PostColor = "Red";
-            this.PostText = "НЕ ВЫПОЛНЕНО";
-            this.CheckPreCondition();
-        }
-
-        private void CheckPreCondition()
-        {
-            if (string.IsNullOrWhiteSpace(this.inputText))
-            {
-                this.PreColor = "Red";
-                this.PreText = "НЕ ВЫПОЛНЕНО (пусто)";
-            }
-            else
-            {
-                this.PreColor = "Green";
-                this.PreText = "ВЫПОЛНЕНО";
-            }
+            this.PreColor = "Gray"; // Серый цвет для нейтрального состояния
+            this.PreText = "ОЖИДАНИЕ ПРОВЕРКИ";
+            this.PostColor = "Gray";
+            this.PostText = "ОЖИДАНИЕ ПРОВЕРКИ";
         }
 
         // Кнопка Выполнить
@@ -211,6 +204,10 @@ namespace UI.ViewModels
                 {
                     var normalizer = new Normalization();
                     this.inputText = normalizer.Normalize(this.inputText);
+                    
+                    this.PreColor = "Green";
+                    this.PreText = "ВЫПОЛНЕНО";
+
                     this.PostColor = "Green";
                     this.PostText = "ВЫПОЛНЕНО";
                 }
@@ -251,8 +248,17 @@ namespace UI.ViewModels
             }
             catch (System.ArgumentNullException ex)
             {
+                this.PreColor = "Red";
+                this.PreText = "ОШИБКА Pre: " + ex.Message;
                 this.PostColor = "Red";
                 this.PostText = "ОШИБКА Pre: " + ex.Message;
+            }
+            catch (System.ArgumentException ex)  // ← ДОБАВЬ ЭТОТ БЛОК
+            {
+                this.PreColor = "Red";
+                this.PreText = "ОШИБКА Pre: " + ex.Message;
+                this.PostColor = "Red";
+                this.PostText = "НЕ ВЫПОЛНЕНО";
             }
             catch (System.InvalidOperationException ex)
             {
@@ -269,6 +275,22 @@ namespace UI.ViewModels
         // Вспомогательный метод для обработки результата
         private void HandleProcessResult(ProcessResult result)
         {
+            var failedPres = result.PreConditions.Where(c => !c.IsMet).ToList();
+
+            if (failedPres.Any())
+            {
+                this.PreColor = "Red";
+                string preErrors = string.Join("; ", failedPres.Select(c => c.Name));
+                this.PreText = "ОШИБКА: " + preErrors;
+
+                this.PostColor = "Red";
+                this.PostText = "НЕ ВЫПОЛНЕНО";
+                return;
+            }
+
+            this.PreColor = "Green";
+            this.PreText = "ВЫПОЛНЕНО";
+
             if (result.isSuccess == true)
             {
                 this.inputText = result.OutputText;
@@ -278,28 +300,12 @@ namespace UI.ViewModels
             else
             {
                 this.PostColor = "Red";
-                string errorMessages = "";
-
-                foreach (var condition in result.PreConditions)
-                {
-                    if (condition.IsMet == false)
-                    {
-                        if (errorMessages != "") errorMessages += "; ";
-                        errorMessages += condition.Name;
-                    }
-                }
-
-                foreach (var condition in result.PostConditions)
-                {
-                    if (condition.IsMet == false)
-                    {
-                        if (errorMessages != "") errorMessages += "; ";
-                        errorMessages += condition.Name;
-                    }
-                }
-
-                this.PostText = "ОШИБКА: " + errorMessages;
+                var failedPosts = result.PostConditions.Where(c => !c.IsMet).ToList();
+                string postErrors = string.Join("; ", failedPosts.Select(c => c.Name));
+                this.PostText = "ОШИБКА: " + postErrors;
             }
+
+            this.Notify("InputText");
         }
 
         // Кнопка Показать контракт

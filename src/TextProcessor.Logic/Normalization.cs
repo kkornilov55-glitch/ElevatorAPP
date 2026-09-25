@@ -13,6 +13,10 @@ namespace TextProcessor.Logic
             {
                 throw new ArgumentNullException(nameof(text), "Pre-условие нарушено: текст не может быть null");
             }
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                throw new ArgumentException("Pre-условие нарушено: текст не может быть пустым или состоять только из пробелов");
+            }
 
             string result = text;
 
