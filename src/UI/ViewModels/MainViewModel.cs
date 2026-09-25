@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace UI.ViewModels
 {
@@ -35,34 +36,11 @@ namespace UI.ViewModels
             {
                 this.currentOperationTitle = value;
                 this.Notify("CurrentOperationTitle");
-                this.UpdateFilterVisibility();
+                this.UpdateOperationVisibility();
                 this.ResetStatuses();
             }
         }
 
-        // Свойства для управления видимостью поля фильтрации
-        private System.Windows.Visibility isFilteringVisible = System.Windows.Visibility.Collapsed;
-        public System.Windows.Visibility IsFilteringVisible
-        {
-            get { return this.isFilteringVisible; }
-            set
-            {
-                this.isFilteringVisible = value;
-                this.Notify("IsFilteringVisible");
-            }
-        }
-
-        private void UpdateFilterVisibility()
-        {
-            if (this.currentOperationTitle == "Фильтрация строк")
-            {
-                this.IsFilteringVisible = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                this.IsFilteringVisible = System.Windows.Visibility.Collapsed;
-            }
-        }
 
         private string inputText = "";
         public string InputText
@@ -91,6 +69,42 @@ namespace UI.ViewModels
             }
         }
 
+        // Выбранный тип маски
+        private string selectedMaskType = "Телефон (10 цифр)";
+        public string SelectedMaskType
+        {
+            get { return this.selectedMaskType; }
+            set
+            {
+                this.selectedMaskType = value;
+                this.Notify("SelectedMaskType");
+            }
+        }
+
+        // Видимость поля фильтрации
+        private System.Windows.Visibility isFilteringVisible = System.Windows.Visibility.Collapsed;
+        public System.Windows.Visibility IsFilteringVisible
+        {
+            get { return this.isFilteringVisible; }
+            set
+            {
+                this.isFilteringVisible = value;
+                this.Notify("IsFilteringVisible");
+            }
+        }
+
+        // Видимость выбора маски
+        private System.Windows.Visibility isMaskingOptionsVisible = System.Windows.Visibility.Collapsed;
+        public System.Windows.Visibility IsMaskingOptionsVisible
+        {
+            get { return this.isMaskingOptionsVisible; }
+            set
+            {
+                this.isMaskingOptionsVisible = value;
+                this.Notify("IsMaskingOptionsVisible");
+            }
+        }
+
         // Индикаторы Pre
         private string preColor = "Red";
         public string PreColor
@@ -112,6 +126,17 @@ namespace UI.ViewModels
                 this.preText = value;
                 this.Notify("PreText");
             }
+        }
+
+        // Методы управления видимостью
+
+        private void UpdateOperationVisibility()
+        {
+            this.IsFilteringVisible = (this.currentOperationTitle == "Фильтрация строк")
+                ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+
+            this.IsMaskingOptionsVisible = (this.currentOperationTitle == "Маскирование")
+                ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
         }
 
         // Индикаторы Post
@@ -177,56 +202,65 @@ namespace UI.ViewModels
             }
         }
 
-        // Кнопка Выполнить (поставить потом сюда бизнес-логику, это щас для теста)
+        // Кнопка Выполнить
         public void ExecuteOperation()
         {
             try
             {
                 if (this.currentOperationTitle == "Нормализация текста")
                 {
-                    // Метод возвращает строку и кидает исключения при ошибке
                     var normalizer = new Normalization();
                     this.inputText = normalizer.Normalize(this.inputText);
-
                     this.PostColor = "Green";
                     this.PostText = "ВЫПОЛНЕНО";
                 }
                 else if (this.currentOperationTitle == "Маскирование")
                 {
-                    // Метод возвращает ProcessResult
                     var masker = new TextMasking();
-                    ProcessResult result = masker.RuNumberMask(this.inputText);
-                    HandleProcessResult(result);
+                    ProcessResult result;
+
+                    // Выбираем метод в зависимости от того, что выбрал пользователь в интерфейсе
+                    if (this.selectedMaskType == "Телефон (10 цифр)")
+                    {
+                        result = masker.RuNumberMask(this.inputText);
+                    }
+                    else if (this.selectedMaskType == "СНИЛС (11 цифр)")
+                    {
+                        result = masker.SnilsMask(this.inputText);
+                    }
+                    else if (this.selectedMaskType == "Банковская карта (16 цифр)")
+                    {
+                        result = masker.BankCardMask(this.inputText);
+                    }
+                    else
+                    {
+                        result = masker.RuNumberMask(this.inputText); // запасной вариант
+                    }
+
+                    this.HandleProcessResult(result);
                 }
                 else if (this.currentOperationTitle == "Фильтрация строк")
                 {
-                    // Метод возвращает ProcessResult
                     var filter = new TextFiltering();
-                    // Передаем ключевое слово
                     string keywordToUse = string.IsNullOrWhiteSpace(this.filterKeyword) ? "тест" : this.filterKeyword;
-
                     ProcessResult result = filter.FilterLinesByKeyword(this.inputText, keywordToUse);
-                    HandleProcessResult(result);
+                    this.HandleProcessResult(result);
                 }
 
-                // Уведомляем UI об изменении текста
                 this.Notify("InputText");
             }
-            catch (ArgumentNullException ex)
+            catch (System.ArgumentNullException ex)
             {
-                // Нарушено Pre-условие
                 this.PostColor = "Red";
                 this.PostText = "ОШИБКА Pre: " + ex.Message;
             }
-            catch (InvalidOperationException ex)
+            catch (System.InvalidOperationException ex)
             {
-                // Нарушено Post-условие
                 this.PostColor = "Red";
                 this.PostText = "ОШИБКА Post: " + ex.Message;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                // Любая другая непредвиденная ошибка
                 this.PostColor = "Red";
                 this.PostText = "КРИТИЧЕСКАЯ ОШИБКА: " + ex.Message;
             }
@@ -237,46 +271,33 @@ namespace UI.ViewModels
         {
             if (result.isSuccess == true)
             {
-                // Если всё успешно, обновляем текст и ставим зелёный статус
                 this.inputText = result.OutputText;
                 this.PostColor = "Green";
                 this.PostText = "ВЫПОЛНЕНО";
             }
             else
             {
-                // Если есть ошибки, собираем их названия в одну строку
                 this.PostColor = "Red";
-
                 string errorMessages = "";
 
-                // Проверяем проваленные Pre-условия
                 foreach (var condition in result.PreConditions)
                 {
                     if (condition.IsMet == false)
                     {
-                        // Если строка уже не пустая, добавляем разделитель
-                        if (errorMessages != "")
-                        {
-                            errorMessages = errorMessages + "; ";
-                        }
-                        errorMessages = errorMessages + condition.Name;
+                        if (errorMessages != "") errorMessages += "; ";
+                        errorMessages += condition.Name;
                     }
                 }
 
-                // Проверяем проваленные Post-условия
                 foreach (var condition in result.PostConditions)
                 {
                     if (condition.IsMet == false)
                     {
-                        if (errorMessages != "")
-                        {
-                            errorMessages = errorMessages + "; ";
-                        }
-                        errorMessages = errorMessages + condition.Name;
+                        if (errorMessages != "") errorMessages += "; ";
+                        errorMessages += condition.Name;
                     }
                 }
 
-                // Выводим итоговое сообщение об ошибке
                 this.PostText = "ОШИБКА: " + errorMessages;
             }
         }
@@ -292,17 +313,61 @@ namespace UI.ViewModels
         // Кнопка Загрузить файл
         public void LoadFile()
         {
-            // var filePath = fileService.OpenFileDialog();
-            // if (filePath != null) this.InputText = fileService.ReadFile(filePath);
-            MessageBox.Show("Заглушка: Здесь откроется проводник для выбора файла", "Загрузить файл");
+            // Создаем диалог открытия файла
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Выберите текстовый файл для загрузки";
+            openFileDialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            openFileDialog.DefaultExt = ".txt";
+
+            // Показываем диалог и проверяем, нажал ли пользователь "ОК"
+            bool? result = openFileDialog.ShowDialog();
+
+            if (result == true)
+            {
+                try
+                {
+                    // Используем бизнес-логику для чтения файла
+                    TextFileIO fileIO = new TextFileIO();
+                    string loadedText = fileIO.ImportFromFile(openFileDialog.FileName);
+
+                    // Записываем текст в свойство
+                    this.InputText = loadedText;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при чтении файла:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         // Кнопка Сохранить файл
         public void SaveFile()
         {
-            // var filePath = fileService.SaveFileDialog();
-            // if (filePath != null) fileService.WriteFile(filePath, this.InputText);
-            MessageBox.Show("Заглушка: Здесь откроется проводник для сохранения файла", "Скачать файл");
+            // Создаем диалог сохранения файла
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Выберите место для сохранения файла";
+            saveFileDialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            saveFileDialog.DefaultExt = ".txt";
+            saveFileDialog.FileName = "result.txt"; // Имя по умолчанию
+
+            // Показываем диалог и проверяем, нажал ли пользователь "Сохранить"
+            bool? result = saveFileDialog.ShowDialog();
+
+            if (result == true)
+            {
+                try
+                {
+                    // Используем бизнес-логику для записи файла
+                    TextFileIO fileIO = new TextFileIO();
+                    fileIO.ExportToFile(saveFileDialog.FileName, this.InputText);
+
+                    MessageBox.Show("Файл успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при сохранении файла:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }
