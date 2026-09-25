@@ -2,7 +2,7 @@
 using Xunit;
 using TextProcessor.Logic;
 
-namespace TextProcessorTests
+namespace TextProcessingTests
 {
     public class TextFilteringTests
     {
