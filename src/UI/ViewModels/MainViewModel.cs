@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace UI.ViewModels
 {
@@ -292,17 +293,61 @@ namespace UI.ViewModels
         // Кнопка Загрузить файл
         public void LoadFile()
         {
-            // var filePath = fileService.OpenFileDialog();
-            // if (filePath != null) this.InputText = fileService.ReadFile(filePath);
-            MessageBox.Show("Заглушка: Здесь откроется проводник для выбора файла", "Загрузить файл");
+            // Создаем диалог открытия файла
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Выберите текстовый файл для загрузки";
+            openFileDialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            openFileDialog.DefaultExt = ".txt";
+
+            // Показываем диалог и проверяем, нажал ли пользователь "ОК"
+            bool? result = openFileDialog.ShowDialog();
+
+            if (result == true)
+            {
+                try
+                {
+                    // Используем бизнес-логику для чтения файла
+                    TextFileIO fileIO = new TextFileIO();
+                    string loadedText = fileIO.ImportFromFile(openFileDialog.FileName);
+
+                    // Записываем текст в свойство
+                    this.InputText = loadedText;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при чтении файла:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         // Кнопка Сохранить файл
         public void SaveFile()
         {
-            // var filePath = fileService.SaveFileDialog();
-            // if (filePath != null) fileService.WriteFile(filePath, this.InputText);
-            MessageBox.Show("Заглушка: Здесь откроется проводник для сохранения файла", "Скачать файл");
+            // Создаем диалог сохранения файла
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Выберите место для сохранения файла";
+            saveFileDialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            saveFileDialog.DefaultExt = ".txt";
+            saveFileDialog.FileName = "result.txt"; // Имя по умолчанию
+
+            // Показываем диалог и проверяем, нажал ли пользователь "Сохранить"
+            bool? result = saveFileDialog.ShowDialog();
+
+            if (result == true)
+            {
+                try
+                {
+                    // Используем бизнес-логику для записи файла
+                    TextFileIO fileIO = new TextFileIO();
+                    fileIO.ExportToFile(saveFileDialog.FileName, this.InputText);
+
+                    MessageBox.Show("Файл успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при сохранении файла:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }
