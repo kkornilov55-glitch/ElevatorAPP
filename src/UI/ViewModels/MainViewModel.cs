@@ -253,7 +253,7 @@ namespace UI.ViewModels
                 this.PostColor = "Red";
                 this.PostText = "ОШИБКА Pre: " + ex.Message;
             }
-            catch (System.ArgumentException ex)  // ← ДОБАВЬ ЭТОТ БЛОК
+            catch (System.ArgumentException ex)
             {
                 this.PreColor = "Red";
                 this.PreText = "ОШИБКА Pre: " + ex.Message;
