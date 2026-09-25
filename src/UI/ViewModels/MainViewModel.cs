@@ -269,6 +269,22 @@ namespace UI.ViewModels
         // Вспомогательный метод для обработки результата
         private void HandleProcessResult(ProcessResult result)
         {
+            var failedPres = result.PreConditions.Where(c => !c.IsMet).ToList();
+
+            if (failedPres.Any())
+            {
+                this.PreColor = "Red";
+                string preErrors = string.Join("; ", failedPres.Select(c => c.Name));
+                this.PreText = "ОШИБКА: " + preErrors;
+
+                this.PostColor = "Red";
+                this.PostText = "НЕ ВЫПОЛНЕНО";
+                return;
+            }
+
+            this.PreColor = "Green";
+            this.PreText = "ВЫПОЛНЕНО";
+
             if (result.isSuccess == true)
             {
                 this.inputText = result.OutputText;
@@ -278,28 +294,12 @@ namespace UI.ViewModels
             else
             {
                 this.PostColor = "Red";
-                string errorMessages = "";
-
-                foreach (var condition in result.PreConditions)
-                {
-                    if (condition.IsMet == false)
-                    {
-                        if (errorMessages != "") errorMessages += "; ";
-                        errorMessages += condition.Name;
-                    }
-                }
-
-                foreach (var condition in result.PostConditions)
-                {
-                    if (condition.IsMet == false)
-                    {
-                        if (errorMessages != "") errorMessages += "; ";
-                        errorMessages += condition.Name;
-                    }
-                }
-
-                this.PostText = "ОШИБКА: " + errorMessages;
+                var failedPosts = result.PostConditions.Where(c => !c.IsMet).ToList();
+                string postErrors = string.Join("; ", failedPosts.Select(c => c.Name));
+                this.PostText = "ОШИБКА: " + postErrors;
             }
+
+            this.Notify("InputText");
         }
 
         // Кнопка Показать контракт
