@@ -1,9 +1,16 @@
-﻿using System.ComponentModel;
+﻿using Elevator.Logic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace UI.ViewModels
 {
+    public class ConditionUiModel
+    {
+        public string Name { get; set; }
+        public bool IsMet { get; set; }
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -28,7 +35,32 @@ namespace UI.ViewModels
             {
                 this.currentOperationTitle = value;
                 this.Notify("CurrentOperationTitle");
+                this.UpdateFilterVisibility();
                 this.ResetStatuses();
+            }
+        }
+
+        // Свойства для управления видимостью поля фильтрации
+        private System.Windows.Visibility isFilteringVisible = System.Windows.Visibility.Collapsed;
+        public System.Windows.Visibility IsFilteringVisible
+        {
+            get { return this.isFilteringVisible; }
+            set
+            {
+                this.isFilteringVisible = value;
+                this.Notify("IsFilteringVisible");
+            }
+        }
+
+        private void UpdateFilterVisibility()
+        {
+            if (this.currentOperationTitle == "Фильтрация строк")
+            {
+                this.IsFilteringVisible = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                this.IsFilteringVisible = System.Windows.Visibility.Collapsed;
             }
         }
 
@@ -44,6 +76,18 @@ namespace UI.ViewModels
                 this.inputText = value;
                 this.Notify("InputText");
                 this.CheckPreCondition(); // Проверяем Pre при каждом изменении текста
+            }
+        }
+
+        // Ключевое слово для фильтрации
+        private string filterKeyword = "";
+        public string FilterKeyword
+        {
+            get { return this.filterKeyword; }
+            set
+            {
+                this.filterKeyword = value;
+                this.Notify("FilterKeyword");
             }
         }
 
@@ -121,11 +165,10 @@ namespace UI.ViewModels
 
         private void CheckPreCondition()
         {
-            // пример заменить на бизнес-логику потом
             if (string.IsNullOrWhiteSpace(this.inputText))
             {
                 this.PreColor = "Red";
-                this.PreText = "НЕ ВЫПОЛНЕНО";
+                this.PreText = "НЕ ВЫПОЛНЕНО (пусто)";
             }
             else
             {
@@ -137,36 +180,105 @@ namespace UI.ViewModels
         // Кнопка Выполнить (поставить потом сюда бизнес-логику, это щас для теста)
         public void ExecuteOperation()
         {
-            // Проверка Pre-условия
-            if (string.IsNullOrWhiteSpace(this.inputText))
+            try
             {
+                if (this.currentOperationTitle == "Нормализация текста")
+                {
+                    // Метод возвращает строку и кидает исключения при ошибке
+                    var normalizer = new Normalization();
+                    this.inputText = normalizer.Normalize(this.inputText);
+
+                    this.PostColor = "Green";
+                    this.PostText = "ВЫПОЛНЕНО";
+                }
+                else if (this.currentOperationTitle == "Маскирование")
+                {
+                    // Метод возвращает ProcessResult
+                    var masker = new TextMasking();
+                    ProcessResult result = masker.RuNumberMask(this.inputText);
+                    HandleProcessResult(result);
+                }
+                else if (this.currentOperationTitle == "Фильтрация строк")
+                {
+                    // Метод возвращает ProcessResult
+                    var filter = new TextFiltering();
+                    // Передаем ключевое слово
+                    string keywordToUse = string.IsNullOrWhiteSpace(this.filterKeyword) ? "тест" : this.filterKeyword;
+
+                    ProcessResult result = filter.FilterLinesByKeyword(this.inputText, keywordToUse);
+                    HandleProcessResult(result);
+                }
+
+                // Уведомляем UI об изменении текста
+                this.Notify("InputText");
+            }
+            catch (ArgumentNullException ex)
+            {
+                // Нарушено Pre-условие
                 this.PostColor = "Red";
-                this.PostText = "ОШИБКА: Pre-условие не выполнено (текст пуст)";
-                return;
+                this.PostText = "ОШИБКА Pre: " + ex.Message;
             }
-
-            if (this.currentOperationTitle == "Нормализация текста")
+            catch (InvalidOperationException ex)
             {
-                // Имитация нормализации
-                this.inputText = this.inputText.Trim().ToLower();
+                // Нарушено Post-условие
+                this.PostColor = "Red";
+                this.PostText = "ОШИБКА Post: " + ex.Message;
             }
-            else if (this.currentOperationTitle == "Маскирование")
+            catch (Exception ex)
             {
-                // Имитация маскирования
-                this.inputText = this.inputText.Replace("а", "*").Replace("о", "*").Replace("е", "*").Replace("и", "*");
+                // Любая другая непредвиденная ошибка
+                this.PostColor = "Red";
+                this.PostText = "КРИТИЧЕСКАЯ ОШИБКА: " + ex.Message;
             }
-            else if (this.currentOperationTitle == "Фильтрация строк")
+        }
+
+        // Вспомогательный метод для обработки результата
+        private void HandleProcessResult(ProcessResult result)
+        {
+            if (result.isSuccess == true)
             {
-                // Имитация фильтрации
-                this.inputText = this.inputText.Replace("0", "").Replace("1", "").Replace("2", "").Replace("3", "").Replace("4", "").Replace("5", "").Replace("6", "").Replace("7", "").Replace("8", "").Replace("9", "");
+                // Если всё успешно, обновляем текст и ставим зелёный статус
+                this.inputText = result.OutputText;
+                this.PostColor = "Green";
+                this.PostText = "ВЫПОЛНЕНО";
             }
+            else
+            {
+                // Если есть ошибки, собираем их названия в одну строку
+                this.PostColor = "Red";
 
-            // Сообщаем интерфейсу, что текст изменился
-            this.Notify("InputText");
+                string errorMessages = "";
 
-            // Проверка Post-условия
-            this.PostColor = "Green";
-            this.PostText = "ВЫПОЛНЕНО";
+                // Проверяем проваленные Pre-условия
+                foreach (var condition in result.PreConditions)
+                {
+                    if (condition.IsMet == false)
+                    {
+                        // Если строка уже не пустая, добавляем разделитель
+                        if (errorMessages != "")
+                        {
+                            errorMessages = errorMessages + "; ";
+                        }
+                        errorMessages = errorMessages + condition.Name;
+                    }
+                }
+
+                // Проверяем проваленные Post-условия
+                foreach (var condition in result.PostConditions)
+                {
+                    if (condition.IsMet == false)
+                    {
+                        if (errorMessages != "")
+                        {
+                            errorMessages = errorMessages + "; ";
+                        }
+                        errorMessages = errorMessages + condition.Name;
+                    }
+                }
+
+                // Выводим итоговое сообщение об ошибке
+                this.PostText = "ОШИБКА: " + errorMessages;
+            }
         }
 
         // Кнопка Показать контракт
