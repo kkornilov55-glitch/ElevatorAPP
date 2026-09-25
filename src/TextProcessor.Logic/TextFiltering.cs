@@ -1,4 +1,4 @@
-﻿namespace Elevator.Logic
+﻿namespace TextProcessor.Logic
 {
     /// <summary>
     /// Класс для фильтрации текста по ключевому слову.

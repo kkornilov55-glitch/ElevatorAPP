@@ -1,6 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
-namespace Elevator.Logic
+namespace TextProcessor.Logic
 {
     public class Normalization
     {
@@ -13,25 +14,19 @@ namespace Elevator.Logic
                 throw new ArgumentNullException(nameof(text), "Pre-условие нарушено: текст не может быть null");
             }
 
-            if (string.IsNullOrEmpty(text))
-            {
-                return "";
-            }
-
             string result = text;
 
             result = Lowercase(result);
-
-            result = RemovePunct(result);
-
             result = RemoveSpecialChar(result);
-
+            result = RemovePunct(result);
             result = CollapseWhitespace(result);
-
             result = TrimWhitespace(result);
 
             // Post-условия
-
+            if (string.IsNullOrEmpty(result))
+            {
+                throw new InvalidOperationException("Post-условие нарушено: результат не может быть пустой строкой");
+            }
             if (result != result.ToLower())
             {
                 throw new InvalidOperationException("Post-условие нарушено: результат содержит символы верхнего регистра");
@@ -47,7 +42,6 @@ namespace Elevator.Logic
                 throw new InvalidOperationException("Post-условие нарушено: результат содержит знаки препинания");
             }
 
-
             return result;
         }
 
@@ -58,39 +52,49 @@ namespace Elevator.Logic
         /// </summary>
         /// <param name="text">введённый текст</param>
         /// <returns>обработанный текст</returns>
-        static string Lowercase(string text)
-            { return text.ToLower(); }
+        private static string Lowercase(string text)
+        {
+            return text.ToLower();
+        }
 
         /// <summary>
         /// Удаление пунктуации и спецсимволов
         /// </summary>
         /// <param name="text">введённый текст</param>
         /// <returns>обработанный текст</returns>
-        static string RemovePunct(string text)
-        { return Regex.Replace(text, @"[^\w\s]", ""); }
+        private static string RemovePunct(string text)
+        {
+            return Regex.Replace(text, @"[^\w\s]", "");
+        }
 
         /// <summary>
         /// Замена переносов строк и табуляций на пробелы
         /// </summary>
         /// <param name="text">введённый текст</param>
         /// <returns>обработанный текст</returns>
-        static string RemoveSpecialChar(string text)
-        { return Regex.Replace(text, @"[\t\n\r]", " "); }
+        private static string RemoveSpecialChar(string text)
+        {
+            return Regex.Replace(text, @"[\t\n\r]", " ");
+        }
 
         /// <summary>
         /// Замена 2+ пробелов подряд на один
         /// </summary>
         /// <param name="text">введённый текст</param>
         /// <returns>обработанный текст</returns>
-        static string CollapseWhitespace(string text)
-        { return Regex.Replace(text, @"\s+", " "); }
+        private static string CollapseWhitespace(string text)
+        {
+            return Regex.Replace(text, @"\s+", " ");
+        }
 
         /// <summary>
         /// Удаление пробелов в начале и конце
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        static string TrimWhitespace(string text)
-        { return text.Trim(); }
+        /// <param name="text">введённый текст</param>
+        /// <returns>обработанный текст</returns>
+        private static string TrimWhitespace(string text)
+        {
+            return text.Trim();
+        }
     }
 }
