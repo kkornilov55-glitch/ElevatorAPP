@@ -180,8 +180,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                <!-- Заголовок -->
                 <TextBlock Grid.Row="0" 
                            Text="{Binding CurrentOperationTitle}" 
                            FontSize="18" 
@@ -189,25 +191,14 @@
                            HorizontalAlignment="Center"
                            Margin="0,0,0,10"/>
 
-                <!-- Окно для текста -->
-                <Border Grid.Row="1" 
-                        CornerRadius="12"
-                        BorderBrush="#CCCCCC"
-                        BorderThickness="1"
-                        Background="White"
-                        ClipToBounds="True"
-                        Margin="0,0,0,8">
-                    <TextBox TextWrapping="Wrap" 
-                             AcceptsReturn="True"
-                             Padding="10"
-                             FontSize="14"
+                <!-- Основное окно для текста -->
+                <Border Grid.Row="1" CornerRadius="12" BorderBrush="#CCCCCC" BorderThickness="1" Background="White" ClipToBounds="True" Margin="0,0,0,8">
+                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" Padding="10" FontSize="14"
                              Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             VerticalAlignment="Stretch" BorderBrush="{x:Null}" Foreground="Black"/>
+                             BorderThickness="0" Background="Transparent" VerticalAlignment="Stretch" Foreground="Black"/>
                 </Border>
-                
-                <!-- Поле ключевого слова фильтрации -->
+
+                <!-- Поле ключевого слова (видим только при фильтрации) -->
                 <Border Grid.Row="2" Margin="0,0,0,8" Visibility="{Binding IsFilteringVisible}">
                     <StackPanel>
                         <TextBlock Text="Ключевое слово для фильтрации:" 
@@ -215,41 +206,43 @@
                                    FontWeight="Bold" 
                                    Foreground="#666666" 
                                    Margin="0,0,0,4"/>
-                        <Border CornerRadius="8" 
-                                BorderBrush="#CCCCCC" 
-                                BorderThickness="1" 
-                                Background="#F9F9F9">
+                        <Border CornerRadius="8" BorderBrush="#CCCCCC" BorderThickness="1" Background="#F9F9F9">
                             <TextBox Text="{Binding FilterKeyword, UpdateSourceTrigger=PropertyChanged}"
-                                     Padding="8,6"
-                                     FontSize="13"
-                                     BorderThickness="0"
-                                     Background="Transparent"
-                                     ToolTip="Введите слово для поиска (используется при операции 'Фильтрация строк')"/>    
+                                     Padding="8,6" FontSize="13" BorderThickness="0" Background="Transparent"
+                                     ToolTip="Введите слово для поиска (используется при операции 'Фильтрация строк')"/>
                         </Border>
                     </StackPanel>
                 </Border>
 
+                <!-- Выбор типа маски (видим только при маскировании) -->
+                <Border Grid.Row="3" Margin="0,0,0,8" Visibility="{Binding IsMaskingOptionsVisible}">
+                    <StackPanel>
+                        <TextBlock Text="Тип маски для применения:" 
+                                   FontSize="12" 
+                                   FontWeight="Bold" 
+                                   Foreground="#666666" 
+                                   Margin="0,0,0,4"/>
+                        <ComboBox Text="{Binding SelectedMaskType, UpdateSourceTrigger=PropertyChanged}"
+                                  Padding="8,6" 
+                                  FontSize="13"
+                                  BorderBrush="#CCCCCC"
+                                  BorderThickness="1"
+                                  IsEditable="True"
+                                  IsReadOnly="True">
+                            <ComboBoxItem Content="Телефон (10 цифр)"/>
+                            <ComboBoxItem Content="СНИЛС (11 цифр)"/>
+                            <ComboBoxItem Content="Банковская карта (16 цифр)"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
 
                 <!-- Кнопка выполнить -->
-                <Button Grid.Row="3" 
-                        Style="{StaticResource ExecuteButton}"
-                        Content="Выполнить"
-                        Click="BtnExecute_Click"/>
+                <Button Grid.Row="4" Style="{StaticResource ExecuteButton}" Content="Выполнить" Click="BtnExecute_Click"/>
 
                 <!-- Статус контракта -->
-                <Border Grid.Row="4" 
-                        BorderBrush="#CCCCCC" 
-                        BorderThickness="1" 
-                        CornerRadius="12"
-                        Padding="15"
-                        Margin="0,0,0,8">
-
+                <Border Grid.Row="5" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="12" Padding="15" Margin="0,0,0,8">
                     <StackPanel>
-                        <TextBlock Text="Статус контракта" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,15"/>
+                        <TextBlock Text="Статус контракта" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
                         <!-- Индикатор Pre -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
@@ -257,8 +250,7 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="{Binding PreColor}"/>
                                 </Border.Background>
-                                <TextBlock Text="✓" FontSize="20" Foreground="White" 
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="✓" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="PRE" FontSize="12" Foreground="Gray"/>
@@ -272,8 +264,7 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="{Binding PostColor}"/>
                                 </Border.Background>
-                                <TextBlock Text="✓" FontSize="20" Foreground="White" 
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="✓" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center" MaxWidth="400">
                                 <TextBlock Text="POST" FontSize="12" Foreground="Gray"/>
@@ -283,11 +274,8 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Кнопка показать контракт -->
-                <Button Grid.Row="5" 
-                        Style="{StaticResource ContractButton}"
-                        Content="Показать контракт"
-                        Click="BtnShowContract_Click"/>
+                <!-- 6. Кнопка показать контракт -->
+                <Button Grid.Row="6" Style="{StaticResource ContractButton}" Content="Показать контракт" Click="BtnShowContract_Click"/>
             </Grid>
         </Border>
     </Grid>
