@@ -10,8 +10,8 @@ namespace Elevator.Logic
     {
         public bool isSuccess = true;
 
-        private List<(string Name, bool IsMet)> PreConditions = new List<(string Name, bool IsMet)>();
-        private List<(string Name, bool IsMet)> PostConditions = new List<(string Name, bool IsMet)>();
+        public List<(string Name, bool IsMet)> PreConditions { get; private set; } = new List<(string Name, bool IsMet)>();
+        public List<(string Name, bool IsMet)> PostConditions { get; private set; } = new List<(string Name, bool IsMet)>();
         public string OutputText { get; set; } = string.Empty;
 
         public void AddPre(string Name, bool IsMet)
