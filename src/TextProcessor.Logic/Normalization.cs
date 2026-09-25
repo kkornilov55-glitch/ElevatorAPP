@@ -22,9 +22,9 @@ namespace Elevator.Logic
 
             result = Lowercase(result);
 
-            result = RemovePunct(result);
-
             result = RemoveSpecialChar(result);
+
+            result = RemovePunct(result);
 
             result = CollapseWhitespace(result);
 
@@ -67,7 +67,7 @@ namespace Elevator.Logic
         /// <param name="text">введённый текст</param>
         /// <returns>обработанный текст</returns>
         static string RemovePunct(string text)
-        { return Regex.Replace(text, @"[^\w\s]", ""); }
+        { rreturn Regex.Replace(text, @"[.,!?;:(){}\[\]""'\\/\-@#$%^&*+=_|<>~`]", ""); }
 
         /// <summary>
         /// Замена переносов строк и табуляций на пробелы

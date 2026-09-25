@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="Elevator.Logic/Elevator.Logic.csproj" />
   <Project Path="src/UI/UI.csproj" Id="888e7770-6735-4cec-a8fe-a6f24a4fca7c" />
 </Solution>

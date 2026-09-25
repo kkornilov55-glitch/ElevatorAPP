@@ -6,7 +6,7 @@ using System.Text;
 public class TextFileIO
 {
     // ИМПОРТ
-    public string (string filePath)
+    public string ImportFromFile(string filePath)
     {
 
         if (string.IsNullOrEmpty(filePath))
